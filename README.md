@@ -2,8 +2,6 @@
 
 **Turn everyday Android activity into Markdown you can search, revisit, and use with AI.**
 
-[한국어](README.ko.md)
-
 Useful information arrives while you use your phone: a message notification, a call, a photo of a document. Saving and organizing it later takes effort. These workflows connect those existing actions to an Obsidian vault, so the information can become a useful record.
 
 This repository introduces three workflows used in a personal environment. It starts with the concepts and prerequisites. Source code and step-by-step installation guides may be added as each workflow is prepared for reuse.
