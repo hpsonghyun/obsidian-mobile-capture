@@ -16,17 +16,91 @@ This repository introduces three workflows used in a personal environment. It st
 
 For example: find a delivery update without scrolling through messages, revisit an agreement from a call, or search text extracted from a photographed document. These are illustrative uses, not excerpts from personal records.
 
-## One idea, three inputs
+## How the workflows are implemented
+
+The same capture idea uses different capabilities for each input. These diagrams show the tools, their responsibilities, and where processing happens in the reference workflows. Obsidian reads the resulting files; Python and JavaScript perform the recording and organization.
+
+### 1. Notifications: intercept, preserve, organize
+
+AutoNotification supplies notification fields to a Tasker task. Its external JavaScript filters events, identifies the conversation, and applies configured routing rules. Tasker writes the captured text first; a separate Termux worker organizes it afterward.
 
 ```mermaid
-flowchart LR
-    N[Notification received] --> C[Capture and preserve]
-    R[Recording completed] --> C
-    P[Photo saved] --> C
-    C --> T[Convert or interpret as needed]
-    T --> M[Write Markdown records]
-    M --> U[Search, review, and analyze]
+flowchart TB
+    subgraph NPHONE["Android phone"]
+        N1["AutoNotification<br/>Intercept KakaoTalk fields"] --> N2["Tasker JavaScript<br/>Filter and apply routing"]
+        N2 --> N3["Staging Markdown<br/>Conversation queue"]
+        N2 --> N4["Event JSONL<br/>Retain selected fields"]
+        subgraph NTERMUX["Native Termux"]
+            N5["Shell worker + Python<br/>Poll, lock, merge, index"]
+        end
+        N3 --> N5
+    end
+    subgraph NVAULT["Obsidian records"]
+        N6["Dated Markdown<br/>Index and Daily links"]
+    end
+    N5 --> N6
+    N6 -.-> NAI["Optional later AI follow-up"]
 ```
+
+**Capabilities used:** notification interception, Tasker JavaScript actions, file appends, a polled work queue, and Python Markdown processing. The organizer reads staging Markdown, merges dated notes, updates the index, and records collection receipts and Daily Note links. JSONL is a retained event record. The basic capture path needs neither a PC nor an AI response.
+
+### 2. Calls: queue on the phone, transcribe on the PC
+
+A recording app creates the audio file. A native Termux watcher waits for a stable file and registers a persistent job. The worker validates the audio, connects to a PC transcription service through Tailscale, and uses the returned transcript for AI-assisted summaries.
+
+```mermaid
+flowchart TB
+    subgraph CPHONE["Android phone"]
+        C1["Recording app<br/>Save an audio file"]
+        subgraph CNATIVE["Native Termux"]
+            C2["Python watcher<br/>inotify, stability, SQLite"]
+        end
+        subgraph CDEBIAN["Debian in Termux"]
+            C3["Python ASR worker<br/>ffprobe, polling, cache"] --> C4["Codex CLI<br/>Request summary and category"]
+            C4 --> C5["Python note writer<br/>Validate, route, save"]
+        end
+        C1 --> C2
+        C2 --> C3
+    end
+    subgraph CPC["Connected PC"]
+        C6["Authenticated ASR API<br/>faster-whisper GPU"]
+    end
+    C3 <-->|HTTP over Tailscale| C6
+    C4 <-->|Text request and response| CAI["External AI service<br/>Summarize and classify"]
+    C5 --> CV["Obsidian Markdown<br/>Transcript and Daily links"]
+```
+
+**Capabilities used:** filesystem events and recovery scans, SQLite job persistence, `ffprobe` audio validation, authenticated HTTP over Tailscale, local faster-whisper inference, and Codex text analysis. The ASR client polls for results. Completed transcription and summary results can be reused when the source still matches, reducing repeated work after a later failure.
+
+### 3. Photos: preserve the image, interpret, write records
+
+The native Termux watcher detects a saved image and creates a preserved copy plus a JSON job. A Debian worker calls an image-capable AI service through Codex CLI. Python validates the returned fields and applies the storage policy.
+
+```mermaid
+flowchart TB
+    subgraph PPHONE["Android phone"]
+        P1["Camera app<br/>Save an image"]
+        subgraph PNATIVE["Native Termux"]
+            P2["Python file watcher<br/>inotify and file stability"] --> P3["Preserved image copy<br/>Persistent JSON job"]
+        end
+        subgraph PDEBIAN["Debian in Termux"]
+            P4["Worker + Codex CLI<br/>Request image analysis"] --> P5["Python writer<br/>Validate, cache, apply policy"]
+        end
+        P1 --> P2
+        P3 --> P4
+    end
+    P4 <-->|Image request and response| PAI["External image model<br/>Describe, read, and classify"]
+    subgraph PVAULT["Obsidian records"]
+        P6["Daily capture entry<br/>Image and description"]
+        P7["Classified Markdown note<br/>For work material"]
+    end
+    P5 --> P6
+    P5 -->|Work material| P7
+```
+
+**Capabilities used:** filesystem events, image preservation, persistent JSON job stages, AI image understanding and text extraction, and Python template-based writing. The AI returns content; Python writes the files. Saved analysis can be reused if writing fails. This path runs without Tasker or a PC; image inference is performed by the external model service. In the reference policy, work material receives a classified note, while ordinary photos still receive a daily capture entry.
+
+### Shared principles
 
 - **Start with an existing action.** Receiving a notification or saving a file becomes the trigger.
 - **Preserve before interpreting.** Keep the source material or a captured copy available for later review.
