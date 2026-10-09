@@ -1,5 +1,7 @@
 # Obsidian Mobile Capture
 
+☕ **[Buy me a coffee](https://buymeacoffee.com/namsonghyun2)** — Your support is a big help in developing and improving this project.
+
 **Turn everyday Android activity into Markdown you can search, revisit, and use with AI.**
 
 Useful information arrives while you use your phone: a message notification, a call, a photo of a document. Saving and organizing it later takes effort. These workflows connect those existing actions to an Obsidian vault, so the information can become a useful record.
