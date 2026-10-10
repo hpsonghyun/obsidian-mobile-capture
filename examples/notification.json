@@ -1,0 +1,8 @@
+{
+  "example_only": true,
+  "event_type": "notification",
+  "received_at": "2026-01-15T14:30:00Z",
+  "source_label": "Example notification app",
+  "title": "Delivery update",
+  "text": "Your sample order is ready for pickup."
+}

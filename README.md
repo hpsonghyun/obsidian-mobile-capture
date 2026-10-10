@@ -1,12 +1,31 @@
 # Obsidian Mobile Capture
 
-☕ **[Buy me a coffee](https://buymeacoffee.com/namsonghyun2)** — Your support is a big help in developing and improving this project.
-
 **Turn everyday Android activity into Markdown you can search, revisit, and use with AI.**
 
-Useful information arrives while you use your phone: a message notification, a call, a photo of a document. Saving and organizing it later takes effort. These workflows connect those existing actions to an Obsidian vault, so the information can become a useful record.
+Keep useful information from a notification, call, or document photo in a note you can find later. The aim is to reduce the time spent searching through apps and copying information into your vault.
 
-This repository introduces three workflows used in a personal environment. It starts with the concepts and prerequisites. Source code and step-by-step installation guides may be added as each workflow is prepared for reuse.
+For example, a fictional notification can be represented as this short Markdown note:
+
+```markdown
+# Delivery update
+
+Your sample order is ready for pickup.
+
+Received: 2026-01-15 14:30 UTC
+Source: Example notification app
+```
+
+Compare the [fictional input JSON](examples/notification.json) with the [expected Markdown note](examples/notification-note.md), then follow the [notifications → Markdown walkthrough](docs/notification-example.md). The example contains no personal records and was written for documentation.
+
+**Available today:** a workflow overview and a guided input/output example. This repository does **not** include an installable collector, Tasker profile, or Android automation package. You can inspect and copy the sample files now; collecting notifications on a phone still requires your own automation. No general Android compatibility or public installation procedure is verified here.
+
+## Start with one notification
+
+1. Read [notification.json](examples/notification.json) to see the selected fields of one fictional event.
+2. Open [notification-note.md](examples/notification-note.md) in a text editor or Obsidian to see the intended result.
+3. Read the [guided example](docs/notification-example.md) for the field mapping, required apps, setup order, and the exact boundary between this public example and the unpublished collector.
+
+No phone, PC service, or AI account is needed to inspect these two files. They demonstrate the record format; they do not run a capture workflow.
 
 ## Three ways to capture
 
@@ -130,10 +149,18 @@ The notification reference handles **KakaoTalk notification fields**; another ap
 
 ## Current scope
 
-This is a concise workflow overview, separate from an Obsidian community plugin. It does not yet provide an installable automation package. The reference workflows have been operated in a personal setup; general device compatibility and public installation procedures are not claimed here.
+This is a workflow overview with a synthetic notification example, separate from an Obsidian community plugin. It does not yet provide an installable automation package. The reference workflows have been operated in a personal setup; general device compatibility and public installation procedures are not claimed here. The public fixtures are documentation examples, not output from a verified Android run.
 
-Future documentation can add one workflow at a time: minimal scripts, configuration templates, synthetic sample outputs, and installation and recovery guides. This repository contains only newly written explanations and illustrative examples—no personal records, device identifiers, credentials, or private filesystem paths.
+The [notification walkthrough](docs/notification-example.md) now provides a fictional JSON input, its expected Markdown result, and a setup outline. It does not supply the interception profile, filtering JavaScript, queue worker, or organizer. Future additions can prepare those components for reuse one workflow at a time. The documentation and example records contain no personal records, device identifiers, credentials, or private filesystem paths.
 
 ## Building blocks
 
 [Tasker](https://tasker.joaoapps.com/) · [AutoNotification](https://joaoapps.com/autonotification/) · [Termux](https://github.com/termux/termux-app) · [Tailscale](https://tailscale.com/) · [faster-whisper](https://github.com/SYSTRAN/faster-whisper) · [Codex](https://github.com/openai/codex) · [Obsidian](https://obsidian.md/)
+
+## Feedback and support
+
+If this approach would help your workflow, star the repository or [share a use case or suggestion in Issues](https://github.com/hpsonghyun/obsidian-mobile-capture/issues). Fictional examples are welcome; please keep personal records out of public reports.
+
+Optional support helps with documentation, reusable examples, and preparing the workflows for wider use. It does not unlock features.
+
+<a href="https://buymeacoffee.com/namsonghyun2"><img src="assets/buy-me-a-coffee.svg" alt="Buy Me a Coffee — official brand button" width="185"></a>
